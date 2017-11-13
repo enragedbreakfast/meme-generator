@@ -12,7 +12,7 @@
         android:columnWidth="100dp"
         android:gravity="center"
         android:minHeight="90dp"
-        android:numColumns="auto_fit"
+        android:numColumns="3"
         android:stretchMode="columnWidth" />
 
 </LinearLayout>
