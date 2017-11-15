@@ -15,9 +15,9 @@ public class BrowseImagesActivity extends AppCompatActivity {
 
     GridView imagesGridView;
     Integer[] imageIDs = {
-            R.drawable.arthur_fist, R.drawable.bob_the_builder, R.drawable.drake,
-            R.drawable.expanding_brain, R.drawable.fbi_text, R.drawable.forehead_guy,
-            R.drawable.kermit, R.drawable.math_lady
+            R.drawable.arthur_fist_thumbnail, R.drawable.bob_the_builder_thumbnail, R.drawable.drake_thumbnail,
+            R.drawable.expanding_brain_thumbnail, R.drawable.fbi_text_thumbnail, R.drawable.forehead_guy_thumbnail,
+            R.drawable.kermit_thumbnail, R.drawable.math_lady_thumbnail
     };
 
     @Override
@@ -61,7 +61,7 @@ public class BrowseImagesActivity extends AppCompatActivity {
             if (convertView == null) {
                 mImageView = new ImageView(mContext);
                 // TODO: Create thumbnails for images and set LayoutParams accordingly
-                mImageView.setLayoutParams(new GridView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                mImageView.setLayoutParams(new GridView.LayoutParams(380,380));
                 mImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 mImageView.setPadding(16, 16, 16, 16);
             } else {
