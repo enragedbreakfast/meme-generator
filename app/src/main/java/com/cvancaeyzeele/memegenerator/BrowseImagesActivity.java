@@ -1,6 +1,7 @@
 package com.cvancaeyzeele.memegenerator;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -20,6 +21,12 @@ public class BrowseImagesActivity extends AppCompatActivity {
             R.drawable.kermit_thumbnail, R.drawable.math_lady_thumbnail
     };
 
+    Integer[] fullImages = {
+            R.drawable.arthur_fist, R.drawable.bob_the_builder, R.drawable.drake,
+            R.drawable.expanding_brain, R.drawable.fbi_text, R.drawable.forehead_guy,
+            R.drawable.kermit, R.drawable.math_lady
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,6 +39,9 @@ public class BrowseImagesActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent,
                                     View v, int position, long id) {
                 // TODO: Start activity to edit image, pass image clicked on minus _thumbnail
+                Intent intent = new Intent(BrowseImagesActivity.this, EditImageActivity.class);
+                intent.putExtra("image", fullImages[position]);
+                startActivity(intent);
             }
         });
     }
