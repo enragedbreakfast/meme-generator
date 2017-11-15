@@ -31,7 +31,7 @@ public class BrowseImagesActivity extends AppCompatActivity {
         imagesGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent,
                                     View v, int position, long id) {
-                //Toast.makeText(getBaseContext(), "Grid Item " + (position + 1) + " Selected", Toast.LENGTH_LONG).show();
+                // TODO: Start activity to edit image, pass image clicked on minus _thumbnail
             }
         });
     }
@@ -60,7 +60,6 @@ public class BrowseImagesActivity extends AppCompatActivity {
 
             if (convertView == null) {
                 mImageView = new ImageView(mContext);
-                // TODO: Create thumbnails for images and set LayoutParams accordingly
                 mImageView.setLayoutParams(new GridView.LayoutParams(380,380));
                 mImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 mImageView.setPadding(16, 16, 16, 16);
