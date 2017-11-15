@@ -15,6 +15,8 @@ import android.widget.Toast;
 public class BrowseImagesActivity extends AppCompatActivity {
 
     GridView imagesGridView;
+
+    // Two arrays should match in order; if one is added to, other must be added to as well
     Integer[] imageIDs = {
             R.drawable.arthur_fist_thumbnail, R.drawable.bob_the_builder_thumbnail, R.drawable.drake_thumbnail,
             R.drawable.expanding_brain_thumbnail, R.drawable.fbi_text_thumbnail, R.drawable.forehead_guy_thumbnail,
@@ -32,13 +34,14 @@ public class BrowseImagesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_browse_images);
 
+        // Create ImageAdapter for GridView
         imagesGridView = (GridView) findViewById(R.id.gridview_browse_images);
         imagesGridView.setAdapter(new ImageAdapterGridView(this));
 
+        // When image thumbnail is clicked, start EditImageActivity and pass ID of image clicked (full image, not thumbnail)
         imagesGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent,
                                     View v, int position, long id) {
-                // TODO: Start activity to edit image, pass image clicked on minus _thumbnail
                 Intent intent = new Intent(BrowseImagesActivity.this, EditImageActivity.class);
                 intent.putExtra("image", fullImages[position]);
                 startActivity(intent);
@@ -70,6 +73,8 @@ public class BrowseImagesActivity extends AppCompatActivity {
 
             if (convertView == null) {
                 mImageView = new ImageView(mContext);
+
+                // Size of image thumbnails
                 mImageView.setLayoutParams(new GridView.LayoutParams(380,380));
                 mImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 mImageView.setPadding(16, 16, 16, 16);
