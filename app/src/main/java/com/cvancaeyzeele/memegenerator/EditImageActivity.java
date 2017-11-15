@@ -5,14 +5,22 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 public class EditImageActivity extends AppCompatActivity {
 
     RelativeLayout relLayout;
+    EditText txtImage;
+    String imgText;
+    TextView textView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +40,51 @@ public class EditImageActivity extends AppCompatActivity {
         // Set layout params for ImageView
         image.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
         relLayout.addView(image);
-        
+
+        // Create EditText for user to input text
+        txtImage = (EditText)findViewById(R.id.txtImage);
+        textView = new TextView(getApplicationContext());
+        textView.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
+        textView.setTextSize(24);
+        relLayout.addView(textView);
+
+        txtImage.addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable s) {}
+
+            public void beforeTextChanged(CharSequence s, int start,
+                                          int count, int after) {
+            }
+
+            public void onTextChanged(CharSequence s, int start,
+                                      int before, int count) {
+                imgText = txtImage.getText().toString();
+                textView.setText(imgText);
+            }
+        });
+
+        textView.setOnTouchListener(new View.OnTouchListener() {
+            float lastX = 0, lastY = 0;
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case (MotionEvent.ACTION_DOWN):
+                        lastX = event.getX();
+                        lastY = event.getY();
+
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        float dx = event.getX() - lastX;
+                        float dy = event.getY() - lastY;
+                        float finalX = v.getX() + dx;
+                        float finalY = v.getY() + dy + v.getHeight();
+                        v.setX(finalX);
+                        v.setY(finalY);
+                        break;
+                }
+                return true;
+            }
+        });
+
     }
 }
