@@ -19,13 +19,13 @@ public class BrowseImagesActivity extends AppCompatActivity {
     // Two arrays should match in order; if one is added to, other must be added to as well
     Integer[] imageIDs = {
             R.drawable.arthur_fist_thumbnail, R.drawable.bob_the_builder_thumbnail, R.drawable.drake_thumbnail,
-            R.drawable.expanding_brain_thumbnail, R.drawable.fbi_text_thumbnail, R.drawable.forehead_guy_thumbnail,
+            R.drawable.fbi_text_thumbnail, R.drawable.forehead_guy_thumbnail,
             R.drawable.kermit_thumbnail, R.drawable.math_lady_thumbnail
     };
 
     Integer[] fullImages = {
             R.drawable.arthur_fist, R.drawable.bob_the_builder, R.drawable.drake,
-            R.drawable.expanding_brain, R.drawable.fbi_text, R.drawable.forehead_guy,
+            R.drawable.fbi_text, R.drawable.forehead_guy,
             R.drawable.kermit, R.drawable.math_lady
     };
 

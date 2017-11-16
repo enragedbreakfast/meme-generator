@@ -2,4 +2,5 @@
     <string name="app_name">Meme Generator</string>
     <string name="button_upload">Upload Image</string>
     <string name="button_browse">Browse Images</string>
+    <string name="button_save_image">Save Image</string>
 </resources>
