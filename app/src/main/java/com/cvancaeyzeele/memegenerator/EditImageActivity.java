@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
@@ -158,13 +159,13 @@ public class EditImageActivity extends AppCompatActivity {
         } else { // Permission has been granted
             createBitmap();
         }
-
     }
 
     public void createBitmap() {
         // Get Bitmap of ImageView
-        BitmapDrawable drawable = (BitmapDrawable) image.getDrawable();
-        Bitmap bitmap = drawable.getBitmap();
+        Bitmap bitmap = Bitmap.createBitmap(relLayout.getWidth(), relLayout.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas c = new Canvas(bitmap);
+        relLayout.draw(c);
 
         // Create the file
         File sdCardDirectory = Environment.getExternalStorageDirectory();
