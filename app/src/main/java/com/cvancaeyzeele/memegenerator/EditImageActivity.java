@@ -6,7 +6,9 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
@@ -23,6 +25,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -38,6 +48,7 @@ public class EditImageActivity extends AppCompatActivity {
     String imgText2;
     TextView textView2;
     ImageView image;
+    FirebaseStorage storage;
     private final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 0;
 
     @Override
@@ -46,6 +57,10 @@ public class EditImageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_edit_image);
 
         relLayout = (RelativeLayout)findViewById(R.id.relativeLayout);
+
+        // Get Firebase Storage instance
+        FirebaseApp.initializeApp(this);
+        storage = FirebaseStorage.getInstance();
 
         // Display image passed by intent
         Intent intent = getIntent();
@@ -151,6 +166,10 @@ public class EditImageActivity extends AppCompatActivity {
 
     }
 
+    /**
+     *
+     * @param view
+     */
     public void saveImage(View view) {
         // Check for permission to save files
         if (ContextCompat.checkSelfPermission(EditImageActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -162,11 +181,44 @@ public class EditImageActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     *
+     * @param view
+     */
+    public void uploadImage(View view) {
+        // Create a storage reference from our app
+        StorageReference storageRef = storage.getReference();
+
+        // Create a reference to image to upload
+        StorageReference imageRef = storageRef.child(System.currentTimeMillis() + ".png");
+
+        // Create bitmap of image
+        Bitmap bitmap = getBitmap();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos); // 100 keeps full quality
+        byte[] data = baos.toByteArray();
+
+        // Upload image to Firebase Storage
+        UploadTask uploadTask = imageRef.putBytes(data);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle unsuccessful uploads
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                Uri downloadUrl = taskSnapshot.getDownloadUrl();
+            }
+        });
+    }
+
+    /**
+     *
+     */
     public void createBitmap() {
-        // Get Bitmap of ImageView
-        Bitmap bitmap = Bitmap.createBitmap(relLayout.getWidth(), relLayout.getHeight(), Bitmap.Config.ARGB_8888);
-        Canvas c = new Canvas(bitmap);
-        relLayout.draw(c);
+        Bitmap bitmap = getBitmap();
 
         // Create the file
         File sdCardDirectory = Environment.getExternalStorageDirectory();
@@ -194,5 +246,14 @@ public class EditImageActivity extends AppCompatActivity {
         } else {
             Toast.makeText(getApplicationContext(), "Error saving image", Toast.LENGTH_LONG).show();
         }
+    }
+
+    public Bitmap getBitmap() {
+        // Get Bitmap of ImageView
+        Bitmap bitmap = Bitmap.createBitmap(relLayout.getWidth(), relLayout.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas c = new Canvas(bitmap);
+        relLayout.draw(c);
+
+        return bitmap;
     }
 }
