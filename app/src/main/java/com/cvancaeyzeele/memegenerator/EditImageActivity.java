@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -49,6 +50,7 @@ public class EditImageActivity extends AppCompatActivity {
     TextView textView2;
     ImageView image;
     FirebaseStorage storage;
+    FirebaseDatabase database;
     private final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 0;
 
     @Override
@@ -58,9 +60,10 @@ public class EditImageActivity extends AppCompatActivity {
 
         relLayout = (RelativeLayout)findViewById(R.id.relativeLayout);
 
-        // Get Firebase Storage instance
+        // Get Firebase Storage and Database instances
         FirebaseApp.initializeApp(this);
         storage = FirebaseStorage.getInstance();
+        database = FirebaseDatabase.getInstance();
 
         // Display image passed by intent
         Intent intent = getIntent();
@@ -182,7 +185,7 @@ public class EditImageActivity extends AppCompatActivity {
     }
 
     /**
-     *
+     * Upload image to Firebase Storage and save filename to Firebase Database
      * @param view
      */
     public void uploadImage(View view) {
@@ -190,7 +193,8 @@ public class EditImageActivity extends AppCompatActivity {
         StorageReference storageRef = storage.getReference();
 
         // Create a reference to image to upload
-        StorageReference imageRef = storageRef.child(System.currentTimeMillis() + ".png");
+        String fileName = System.currentTimeMillis() + ".png";
+        StorageReference imageRef = storageRef.child(fileName);
 
         // Create bitmap of image
         Bitmap bitmap = getBitmap();
@@ -212,10 +216,13 @@ public class EditImageActivity extends AppCompatActivity {
                 Uri downloadUrl = taskSnapshot.getDownloadUrl();
             }
         });
+
+        // Add data to Firebase database with filename
+        
     }
 
     /**
-     *
+     * Create the bitmap image and save to device
      */
     public void createBitmap() {
         Bitmap bitmap = getBitmap();
@@ -248,6 +255,10 @@ public class EditImageActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Create a bitmap from the relLayout canvas
+     * @return bitmap
+     */
     public Bitmap getBitmap() {
         // Get Bitmap of ImageView
         Bitmap bitmap = Bitmap.createBitmap(relLayout.getWidth(), relLayout.getHeight(), Bitmap.Config.ARGB_8888);
