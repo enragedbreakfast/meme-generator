@@ -80,6 +80,7 @@ public class EditImageActivity extends AppCompatActivity {
             }
         });
 
+        // TODO: touch input is off by few mm
         textView.setOnTouchListener(new View.OnTouchListener() {
             float lastX = 0, lastY = 0;
 
@@ -171,10 +172,9 @@ public class EditImageActivity extends AppCompatActivity {
         File sdCardDirectory = Environment.getExternalStorageDirectory();
         File imageFile = new File(sdCardDirectory, System.currentTimeMillis() + ".png");
 
-        // Write the Bitmap
         boolean success = false;
 
-        // Encode the file as a PNG image
+        // Write the bitmap and encode the file as a PNG image
         FileOutputStream outStream;
 
         try {
