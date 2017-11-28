@@ -3,4 +3,5 @@
     <string name="button_upload">Upload Image</string>
     <string name="button_browse">Browse Images</string>
     <string name="button_save_image">Save Image</string>
+    <string name="button_view_uploads">View Uploads</string>
 </resources>
