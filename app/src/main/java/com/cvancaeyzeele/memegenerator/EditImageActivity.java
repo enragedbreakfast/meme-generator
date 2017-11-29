@@ -6,7 +6,9 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
@@ -14,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,10 +26,27 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class EditImageActivity extends AppCompatActivity {
 
@@ -38,6 +58,8 @@ public class EditImageActivity extends AppCompatActivity {
     String imgText2;
     TextView textView2;
     ImageView image;
+    FirebaseStorage storage;
+    FirebaseDatabase database;
     private final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 0;
 
     @Override
@@ -46,6 +68,11 @@ public class EditImageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_edit_image);
 
         relLayout = (RelativeLayout)findViewById(R.id.relativeLayout);
+
+        // Get Firebase Storage and Database instances
+        FirebaseApp.initializeApp(this);
+        storage = FirebaseStorage.getInstance();
+        database = FirebaseDatabase.getInstance();
 
         // Display image passed by intent
         Intent intent = getIntent();
@@ -151,7 +178,11 @@ public class EditImageActivity extends AppCompatActivity {
 
     }
 
-    public void saveImage(View view) {
+    /**
+     * Check for permission to write to storage before saving image
+     * @param view
+     */
+    public void saveImage(View view) { // TODO: Move to ViewMemeActivity
         // Check for permission to save files
         if (ContextCompat.checkSelfPermission(EditImageActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(EditImageActivity.this,
@@ -162,11 +193,82 @@ public class EditImageActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Upload image to Firebase Storage and save filename to Firebase Database
+     * @param view
+     */
+    public void uploadImage(View view) {
+        // Create a storage reference from our app
+        StorageReference storageRef = storage.getReference();
+
+        // Create a reference to image to upload
+        String imageID = String.valueOf(System.currentTimeMillis());
+        String fileName = imageID + ".png";
+        String timeCreated = DateFormat.getDateTimeInstance().format(new Date(System.currentTimeMillis()));
+        StorageReference imageRef = storageRef.child(fileName);
+
+        // Create bitmap of image
+        Bitmap bitmap = getBitmap();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos); // 100 keeps full quality
+        byte[] data = baos.toByteArray();
+
+        // Upload image to Firebase Storage
+        UploadTask uploadTask = imageRef.putBytes(data);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle unsuccessful uploads
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                Uri downloadUrl = taskSnapshot.getDownloadUrl();
+            }
+        });
+
+        // Add data to Firebase database with filename
+        createDatabaseEntry(imageID, fileName, timeCreated);
+
+        // Display toast with Database info
+        DatabaseReference databaseRef = database.getReference(imageID);
+        databaseRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // Switch to ViewMemeActivity and display finished meme
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w("FirebaseTest", "Failed to read value.", error.toException());
+            }
+        });
+    }
+
+    /**
+     * Create an entry for image in Firebase Database
+     * @param filename
+     */
+    public void createDatabaseEntry(String imageID, String filename, String timeCreated) {
+        // Get database references
+        DatabaseReference databaseRef = database.getReference();
+        DatabaseReference imagesRef = databaseRef.child("images");
+
+        // Create image objects and add to hashmap
+        Map<String, Image> images = new HashMap<>();
+        images.put(imageID, new Image(filename, timeCreated));
+
+        // Push hashmap containing image to database
+        imagesRef.push().setValue(images);
+    }
+
+    /**
+     * Create the bitmap image and save to device
+     */
     public void createBitmap() {
-        // Get Bitmap of ImageView
-        Bitmap bitmap = Bitmap.createBitmap(relLayout.getWidth(), relLayout.getHeight(), Bitmap.Config.ARGB_8888);
-        Canvas c = new Canvas(bitmap);
-        relLayout.draw(c);
+        Bitmap bitmap = getBitmap();
 
         // Create the file
         File sdCardDirectory = Environment.getExternalStorageDirectory();
@@ -193,6 +295,50 @@ public class EditImageActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Image saved successfully", Toast.LENGTH_LONG).show();
         } else {
             Toast.makeText(getApplicationContext(), "Error saving image", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    /**
+     * Create a bitmap from the relLayout canvas
+     * @return bitmap
+     */
+    public Bitmap getBitmap() {
+        // Get Bitmap of ImageView
+        Bitmap bitmap = Bitmap.createBitmap(relLayout.getWidth(), relLayout.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas c = new Canvas(bitmap);
+        relLayout.draw(c);
+
+        return bitmap;
+    }
+
+    /**
+     * Class to store image data
+     */
+    public static class Image {
+        public String filename;
+        public String timeCreated;
+
+        private Image() {}
+
+        public Image(String filename, String timeCreated) {
+            this.filename = filename;
+            this.timeCreated = timeCreated;
+        }
+
+        public String getFilename() {
+            return filename;
+        }
+
+        public void setFilename(String filename) {
+            this.filename = filename;
+        }
+
+        public String getTimeCreated() {
+            return timeCreated;
+        }
+
+        public void setTimeCreated(String timeCreated) {
+            this.timeCreated = timeCreated;
         }
     }
 }
