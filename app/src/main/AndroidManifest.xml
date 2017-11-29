@@ -27,7 +27,8 @@
                 android:value="com.cvancaeyzeele.memegenerator.MainActivity" />
         </activity>
         <activity android:name=".EditImageActivity" />
-        <activity android:name=".ViewUploadsActivity"></activity>
+        <activity android:name=".ViewUploadsActivity" />
+        <activity android:name=".ViewMemeActivity"></activity>
     </application>
 
 </manifest>
