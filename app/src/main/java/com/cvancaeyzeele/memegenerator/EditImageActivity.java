@@ -204,7 +204,7 @@ public class EditImageActivity extends AppCompatActivity {
         // Create a reference to image to upload
         String imageID = String.valueOf(System.currentTimeMillis());
         String fileName = imageID + ".png";
-        String timeCreated = DateFormat.getDateTimeInstance().format(new Date(0));
+        String timeCreated = DateFormat.getDateTimeInstance().format(new Date(System.currentTimeMillis()));
         StorageReference imageRef = storageRef.child(fileName);
 
         // Create bitmap of image
