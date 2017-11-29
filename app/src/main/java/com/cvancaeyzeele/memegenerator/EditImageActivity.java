@@ -179,7 +179,7 @@ public class EditImageActivity extends AppCompatActivity {
     }
 
     /**
-     *
+     * Check for permission to write to storage before saving image
      * @param view
      */
     public void saveImage(View view) { // TODO: Move to ViewMemeActivity
@@ -251,7 +251,7 @@ public class EditImageActivity extends AppCompatActivity {
      * Create an entry for image in Firebase Database
      * @param filename
      */
-    public void createDatabaseEntry(String imageID, String filename, String timeCreated) { // TODO: Fix this, database not being updated correctly
+    public void createDatabaseEntry(String imageID, String filename, String timeCreated) {
         // Get database references
         DatabaseReference databaseRef = database.getReference();
         DatabaseReference imagesRef = databaseRef.child("images");
