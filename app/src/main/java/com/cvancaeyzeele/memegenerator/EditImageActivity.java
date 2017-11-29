@@ -60,6 +60,10 @@ public class EditImageActivity extends AppCompatActivity {
     ImageView image;
     FirebaseStorage storage;
     FirebaseDatabase database;
+
+    String imageID;
+    String fileName;
+
     private final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 0;
 
     @Override
@@ -202,8 +206,8 @@ public class EditImageActivity extends AppCompatActivity {
         StorageReference storageRef = storage.getReference();
 
         // Create a reference to image to upload
-        String imageID = String.valueOf(System.currentTimeMillis());
-        String fileName = imageID + ".png";
+        imageID = String.valueOf(System.currentTimeMillis());
+        fileName = imageID + ".png";
         String timeCreated = DateFormat.getDateTimeInstance().format(new Date(System.currentTimeMillis()));
         StorageReference imageRef = storageRef.child(fileName);
 
@@ -237,6 +241,12 @@ public class EditImageActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // Switch to ViewMemeActivity and display finished meme
+                Intent i = new Intent(EditImageActivity.this, ViewMemeActivity.class);
+
+                // Pass imageID
+                i.putExtra("filename", fileName);
+
+                startActivity(i);
             }
 
             @Override
