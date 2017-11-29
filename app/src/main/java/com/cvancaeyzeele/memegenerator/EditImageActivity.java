@@ -43,6 +43,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class EditImageActivity extends AppCompatActivity {
 
@@ -198,7 +202,9 @@ public class EditImageActivity extends AppCompatActivity {
         StorageReference storageRef = storage.getReference();
 
         // Create a reference to image to upload
-        String fileName = System.currentTimeMillis() + ".png";
+        String imageID = String.valueOf(System.currentTimeMillis());
+        String fileName = imageID + ".png";
+        String timeCreated = DateFormat.getDateTimeInstance().format(new Date(0));
         StorageReference imageRef = storageRef.child(fileName);
 
         // Create bitmap of image
@@ -223,17 +229,14 @@ public class EditImageActivity extends AppCompatActivity {
         });
 
         // Add data to Firebase database with filename
-        createDatabaseEntry(fileName);
+        createDatabaseEntry(imageID, fileName, timeCreated);
 
         // Display toast with Database info
-        DatabaseReference databaseRef = database.getReference("images");
+        DatabaseReference databaseRef = database.getReference(imageID);
         databaseRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                // This method is called once with the initial value and again
-                // whenever data at this location is updated.
-                String value = dataSnapshot.getValue(String.class);
-                Log.d("FirebaseTest", "Value is: " + value);
+                // Switch to ViewMemeActivity and display finished meme
             }
 
             @Override
@@ -242,17 +245,23 @@ public class EditImageActivity extends AppCompatActivity {
                 Log.w("FirebaseTest", "Failed to read value.", error.toException());
             }
         });
-
-        // Open ViewMemeActivity with completed meme
     }
 
     /**
      * Create an entry for image in Firebase Database
      * @param filename
      */
-    public void createDatabaseEntry(String filename) { // TODO: Fix this, database not being updated correctly
-        DatabaseReference databaseRef = database.getReference("images");
-        databaseRef.setValue(filename);
+    public void createDatabaseEntry(String imageID, String filename, String timeCreated) { // TODO: Fix this, database not being updated correctly
+        // Get database references
+        DatabaseReference databaseRef = database.getReference();
+        DatabaseReference imagesRef = databaseRef.child("images");
+
+        // Create image objects and add to hashmap
+        Map<String, Image> images = new HashMap<>();
+        images.put(imageID, new Image(filename, timeCreated));
+
+        // Push hashmap containing image to database
+        imagesRef.push().setValue(images);
     }
 
     /**
@@ -300,5 +309,36 @@ public class EditImageActivity extends AppCompatActivity {
         relLayout.draw(c);
 
         return bitmap;
+    }
+
+    /**
+     * Class to store image data
+     */
+    public static class Image {
+        public String filename;
+        public String timeCreated;
+
+        private Image() {}
+
+        public Image(String filename, String timeCreated) {
+            this.filename = filename;
+            this.timeCreated = timeCreated;
+        }
+
+        public String getFilename() {
+            return filename;
+        }
+
+        public void setFilename(String filename) {
+            this.filename = filename;
+        }
+
+        public String getTimeCreated() {
+            return timeCreated;
+        }
+
+        public void setTimeCreated(String timeCreated) {
+            this.timeCreated = timeCreated;
+        }
     }
 }
