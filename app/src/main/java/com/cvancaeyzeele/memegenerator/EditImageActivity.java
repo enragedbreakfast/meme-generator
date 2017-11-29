@@ -16,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +29,11 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -173,7 +178,7 @@ public class EditImageActivity extends AppCompatActivity {
      *
      * @param view
      */
-    public void saveImage(View view) {
+    public void saveImage(View view) { // TODO: Move to ViewMemeActivity
         // Check for permission to save files
         if (ContextCompat.checkSelfPermission(EditImageActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(EditImageActivity.this,
@@ -218,7 +223,36 @@ public class EditImageActivity extends AppCompatActivity {
         });
 
         // Add data to Firebase database with filename
-        
+        createDatabaseEntry(fileName);
+
+        // Display toast with Database info
+        DatabaseReference databaseRef = database.getReference("images");
+        databaseRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+                String value = dataSnapshot.getValue(String.class);
+                Log.d("FirebaseTest", "Value is: " + value);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w("FirebaseTest", "Failed to read value.", error.toException());
+            }
+        });
+
+        // Open ViewMemeActivity with completed meme
+    }
+
+    /**
+     * Create an entry for image in Firebase Database
+     * @param filename
+     */
+    public void createDatabaseEntry(String filename) { // TODO: Fix this, database not being updated correctly
+        DatabaseReference databaseRef = database.getReference("images");
+        databaseRef.setValue(filename);
     }
 
     /**
