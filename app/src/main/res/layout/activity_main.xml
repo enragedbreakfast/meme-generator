@@ -7,20 +7,10 @@
     tools:context="com.cvancaeyzeele.memegenerator.MainActivity">
 
     <Button
-        android:id="@+id/btnUpload"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/button_upload"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="150dp"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent" />
-
-    <Button
         android:id="@+id/btnBrowse"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="250dp"
+        android:layout_marginTop="200dp"
         android:onClick="openBrowseImages"
         android:text="@string/button_browse"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -31,10 +21,11 @@
         android:id="@+id/btnViewUploads"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="300dp"
         android:text="@string/button_view_uploads"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="350dp"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

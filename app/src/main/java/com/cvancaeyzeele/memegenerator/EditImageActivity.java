@@ -209,7 +209,7 @@ public class EditImageActivity extends AppCompatActivity {
         imageID = String.valueOf(System.currentTimeMillis());
         fileName = imageID + ".png";
         String timeCreated = DateFormat.getDateTimeInstance().format(new Date(System.currentTimeMillis()));
-        StorageReference imageRef = storageRef.child(fileName);
+        StorageReference imageRef = storageRef.child("images/" + fileName);
 
         // Create bitmap of image
         Bitmap bitmap = getBitmap();
