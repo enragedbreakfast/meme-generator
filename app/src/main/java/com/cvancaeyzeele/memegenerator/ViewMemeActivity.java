@@ -36,6 +36,7 @@ public class ViewMemeActivity extends AppCompatActivity {
     FirebaseStorage storage;
     String filename;
     File localFile;
+    Bitmap bitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,18 +49,15 @@ public class ViewMemeActivity extends AppCompatActivity {
 
         // Display image passed by intent
         Intent intent = getIntent();
-        filename = intent.getStringExtra("filename");
+        String imageLocation = intent.getStringExtra("filename");
+        File imgFile = new File(imageLocation);
 
-        // Get image from Firebase
-        Log.d("courtney", filename);
-        StorageReference pathReference = storage.getReference().child(filename);
+        Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
 
         View v = new ImageView(getBaseContext());
         image = new ImageView(v.getContext());
 
-        GlideApp.with(ViewMemeActivity.this)
-                .load(pathReference)
-                .into(image);
+        image.setImageBitmap(bitmap);
 
         // Set layout params for ImageView
         image.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT));

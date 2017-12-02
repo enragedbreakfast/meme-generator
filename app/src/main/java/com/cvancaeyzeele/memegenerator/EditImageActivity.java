@@ -60,6 +60,9 @@ public class EditImageActivity extends AppCompatActivity {
     ImageView image;
     FirebaseStorage storage;
     FirebaseDatabase database;
+    byte[] data;
+    Bitmap bitmap;
+    String imageLocation;
 
     String imageID;
     String fileName;
@@ -212,10 +215,10 @@ public class EditImageActivity extends AppCompatActivity {
         StorageReference imageRef = storageRef.child("images/" + fileName);
 
         // Create bitmap of image
-        Bitmap bitmap = getBitmap();
+        bitmap = getBitmap();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos); // 100 keeps full quality
-        byte[] data = baos.toByteArray();
+        data = baos.toByteArray();
 
         // Upload image to Firebase Storage
         UploadTask uploadTask = imageRef.putBytes(data);
@@ -243,8 +246,10 @@ public class EditImageActivity extends AppCompatActivity {
                 // Switch to ViewMemeActivity and display finished meme
                 Intent i = new Intent(EditImageActivity.this, ViewMemeActivity.class);
 
+                createBitmap();
+
                 // Pass imageID
-                i.putExtra("filename", fileName);
+                i.putExtra("filename", imageLocation);
 
                 startActivity(i);
             }
@@ -283,6 +288,7 @@ public class EditImageActivity extends AppCompatActivity {
         // Create the file
         File sdCardDirectory = Environment.getExternalStorageDirectory();
         File imageFile = new File(sdCardDirectory, System.currentTimeMillis() + ".png");
+        imageLocation = imageFile.getAbsolutePath();
 
         boolean success = false;
 
