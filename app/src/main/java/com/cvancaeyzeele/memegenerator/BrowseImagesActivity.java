@@ -1,6 +1,7 @@
 package com.cvancaeyzeele.memegenerator;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -14,10 +15,18 @@ import android.widget.Toast;
 public class BrowseImagesActivity extends AppCompatActivity {
 
     GridView imagesGridView;
+
+    // Two arrays should match in order; if one is added to, other must be added to as well
     Integer[] imageIDs = {
             R.drawable.arthur_fist_thumbnail, R.drawable.bob_the_builder_thumbnail, R.drawable.drake_thumbnail,
-            R.drawable.expanding_brain_thumbnail, R.drawable.fbi_text_thumbnail, R.drawable.forehead_guy_thumbnail,
+            R.drawable.fbi_text_thumbnail, R.drawable.forehead_guy_thumbnail,
             R.drawable.kermit_thumbnail, R.drawable.math_lady_thumbnail
+    };
+
+    Integer[] fullImages = {
+            R.drawable.arthur_fist, R.drawable.bob_the_builder, R.drawable.drake,
+            R.drawable.fbi_text, R.drawable.forehead_guy,
+            R.drawable.kermit, R.drawable.math_lady
     };
 
     @Override
@@ -25,13 +34,17 @@ public class BrowseImagesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_browse_images);
 
+        // Create ImageAdapter for GridView
         imagesGridView = (GridView) findViewById(R.id.gridview_browse_images);
         imagesGridView.setAdapter(new ImageAdapterGridView(this));
 
+        // When image thumbnail is clicked, start EditImageActivity and pass ID of image clicked (full image, not thumbnail)
         imagesGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent,
                                     View v, int position, long id) {
-                //Toast.makeText(getBaseContext(), "Grid Item " + (position + 1) + " Selected", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(BrowseImagesActivity.this, EditImageActivity.class);
+                intent.putExtra("image", fullImages[position]);
+                startActivity(intent);
             }
         });
     }
@@ -60,7 +73,8 @@ public class BrowseImagesActivity extends AppCompatActivity {
 
             if (convertView == null) {
                 mImageView = new ImageView(mContext);
-                // TODO: Create thumbnails for images and set LayoutParams accordingly
+
+                // Size of image thumbnails
                 mImageView.setLayoutParams(new GridView.LayoutParams(380,380));
                 mImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 mImageView.setPadding(16, 16, 16, 16);
