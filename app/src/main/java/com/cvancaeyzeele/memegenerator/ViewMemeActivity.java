@@ -4,11 +4,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -34,9 +37,9 @@ public class ViewMemeActivity extends AppCompatActivity {
     RelativeLayout relLayout;
     ImageView image;
     FirebaseStorage storage;
-    String filename;
-    File localFile;
+    String imageLocation;
     Bitmap bitmap;
+    File imgFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,8 +52,8 @@ public class ViewMemeActivity extends AppCompatActivity {
 
         // Display image passed by intent
         Intent intent = getIntent();
-        String imageLocation = intent.getStringExtra("filename");
-        File imgFile = new File(imageLocation);
+        imageLocation = intent.getStringExtra("filename");
+        imgFile = new File(imageLocation);
 
         Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
 
@@ -62,6 +65,30 @@ public class ViewMemeActivity extends AppCompatActivity {
         // Set layout params for ImageView
         image.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
         relLayout.addView(image);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.action_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.share:
+
+                Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+                Uri photoUri = Uri.parse(imgFile.getAbsolutePath());
+                sharingIntent.setData(photoUri);
+                sharingIntent.setType("image/*");
+                sharingIntent.putExtra(android.content.Intent.EXTRA_STREAM, photoUri);
+                startActivity(Intent.createChooser(sharingIntent, "Share Via"));
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }
 
