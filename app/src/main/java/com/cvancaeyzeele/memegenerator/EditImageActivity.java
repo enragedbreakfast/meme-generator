@@ -60,6 +60,13 @@ public class EditImageActivity extends AppCompatActivity {
     ImageView image;
     FirebaseStorage storage;
     FirebaseDatabase database;
+    byte[] data;
+    Bitmap bitmap;
+    String imageLocation;
+
+    String imageID;
+    String fileName;
+
     private final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 0;
 
     @Override
@@ -179,21 +186,6 @@ public class EditImageActivity extends AppCompatActivity {
     }
 
     /**
-     * Check for permission to write to storage before saving image
-     * @param view
-     */
-    public void saveImage(View view) { // TODO: Move to ViewMemeActivity
-        // Check for permission to save files
-        if (ContextCompat.checkSelfPermission(EditImageActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(EditImageActivity.this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
-        } else { // Permission has been granted
-            createBitmap();
-        }
-    }
-
-    /**
      * Upload image to Firebase Storage and save filename to Firebase Database
      * @param view
      */
@@ -202,16 +194,16 @@ public class EditImageActivity extends AppCompatActivity {
         StorageReference storageRef = storage.getReference();
 
         // Create a reference to image to upload
-        String imageID = String.valueOf(System.currentTimeMillis());
-        String fileName = imageID + ".png";
+        imageID = String.valueOf(System.currentTimeMillis());
+        fileName = imageID + ".png";
         String timeCreated = DateFormat.getDateTimeInstance().format(new Date(System.currentTimeMillis()));
-        StorageReference imageRef = storageRef.child(fileName);
+        StorageReference imageRef = storageRef.child("images/" + fileName);
 
         // Create bitmap of image
-        Bitmap bitmap = getBitmap();
+        bitmap = getBitmap();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos); // 100 keeps full quality
-        byte[] data = baos.toByteArray();
+        data = baos.toByteArray();
 
         // Upload image to Firebase Storage
         UploadTask uploadTask = imageRef.putBytes(data);
@@ -237,6 +229,14 @@ public class EditImageActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // Switch to ViewMemeActivity and display finished meme
+                Intent i = new Intent(EditImageActivity.this, ViewMemeActivity.class);
+
+                createBitmap();
+
+                // Pass imageID
+                i.putExtra("filename", imageLocation);
+
+                startActivity(i);
             }
 
             @Override
@@ -273,6 +273,7 @@ public class EditImageActivity extends AppCompatActivity {
         // Create the file
         File sdCardDirectory = Environment.getExternalStorageDirectory();
         File imageFile = new File(sdCardDirectory, System.currentTimeMillis() + ".png");
+        imageLocation = imageFile.getAbsolutePath();
 
         boolean success = false;
 
