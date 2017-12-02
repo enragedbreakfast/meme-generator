@@ -17,4 +17,9 @@ public class MainActivity extends AppCompatActivity {
         Intent i = new Intent(this, BrowseImagesActivity.class);
         startActivity(i);
     }
+
+    public void openViewUploads(View view) {
+        Intent i = new Intent(this, ViewUploadsActivity.class);
+        startActivity(i);
+    }
 }
