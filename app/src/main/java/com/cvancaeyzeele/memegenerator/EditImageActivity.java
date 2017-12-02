@@ -186,21 +186,6 @@ public class EditImageActivity extends AppCompatActivity {
     }
 
     /**
-     * Check for permission to write to storage before saving image
-     * @param view
-     */
-    public void saveImage(View view) { // TODO: Move to ViewMemeActivity
-        // Check for permission to save files
-        if (ContextCompat.checkSelfPermission(EditImageActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(EditImageActivity.this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
-        } else { // Permission has been granted
-            createBitmap();
-        }
-    }
-
-    /**
      * Upload image to Firebase Storage and save filename to Firebase Database
      * @param view
      */
