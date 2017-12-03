@@ -62,10 +62,10 @@ public class EditImageActivity extends AppCompatActivity {
     Bitmap bitmap;
     String imageLocation;
     String timeCreated;
-
     String imageID;
     String fileName;
     String firebaseDownloadURL;
+    int fontSize;
     private boolean shouldExecuteOnResume;
 
     private final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 0;
@@ -77,6 +77,7 @@ public class EditImageActivity extends AppCompatActivity {
         // Use the chosen theme
         SharedPreferences preferences = getSharedPreferences("Settings", MODE_PRIVATE);
         boolean useDarkTheme = preferences.getBoolean("dark_theme", false);
+        fontSize = preferences.getInt("font_size", 24);
 
         if(useDarkTheme) {
             setTheme(R.style.AppTheme_Dark);
@@ -108,7 +109,7 @@ public class EditImageActivity extends AppCompatActivity {
         txtImage = (EditText)findViewById(R.id.txtImage);
         textView = new TextView(getApplicationContext());
         textView.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
-        textView.setTextSize(24);
+        textView.setTextSize(fontSize);
         relLayout.addView(textView);
 
         txtImage.addTextChangedListener(new TextWatcher() {
@@ -153,7 +154,7 @@ public class EditImageActivity extends AppCompatActivity {
         txtImage2 = (EditText)findViewById(R.id.txtImage2);
         textView2 = new TextView(getApplicationContext());
         textView2.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
-        textView2.setTextSize(24);
+        textView2.setTextSize(fontSize);
         relLayout.addView(textView2);
 
         txtImage2.addTextChangedListener(new TextWatcher() {
@@ -211,6 +212,9 @@ public class EditImageActivity extends AppCompatActivity {
                 setTheme(R.style.AppTheme_NoActionBar);
                 this.recreate();
             }
+
+            textView.setTextSize(fontSize);
+            textView2.setTextSize(fontSize);
         } else{
             shouldExecuteOnResume = true;
         }
