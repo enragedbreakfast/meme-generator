@@ -13,6 +13,7 @@
         android:layout_marginTop="200dp"
         android:onClick="openBrowseImages"
         android:text="@string/button_browse"
+        style="@style/Widget.AppCompat.Button.Colored"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -24,6 +25,7 @@
         android:layout_marginTop="300dp"
         android:onClick="openViewUploads"
         android:text="@string/button_view_uploads"
+        style="@style/Widget.AppCompat.Button.Colored"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -35,6 +37,7 @@
         android:layout_height="wrap_content"
         android:onClick="retryConnection"
         android:text="@string/button_retry"
+        style="@style/Widget.AppCompat.Button.Colored"
         app:layout_constraintBottom_toTopOf="@+id/btnViewUploads"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
