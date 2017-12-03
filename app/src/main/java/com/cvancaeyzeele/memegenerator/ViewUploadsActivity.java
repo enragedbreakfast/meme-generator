@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -33,13 +34,19 @@ public class ViewUploadsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_view_uploads);
 
         // Get all download URLs and image ID associated
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("images");
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("urls");
 
         ref.addListenerForSingleValueEvent(
                 new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        collectDownloadURLs((Map<String,Object>) dataSnapshot.getValue());
+                        for (DataSnapshot child : dataSnapshot.getChildren()) {
+                            Map<String, String> map = (Map) child.getValue();
+                            urls.add(map.get("url").toString());
+                        }
+                        // Create Gridview
+                        gridview = (GridView)findViewById(R.id.gridview);
+                        gridview.setAdapter(new ImageAdapterGridView(ViewUploadsActivity.this));
                     }
 
                     @Override
@@ -48,24 +55,6 @@ public class ViewUploadsActivity extends AppCompatActivity {
                     }
                 }
         );
-
-        // Create Gridview
-        gridview = (GridView) findViewById(R.id.gridview);
-        gridview.setAdapter(new ImageAdapterGridView(this));
-    }
-
-    private void collectDownloadURLs(Map<String,Object> users) {
-        // iterate through each user, ignoring their UID
-        for (Map.Entry<String, Object> entry : users.entrySet()){
-
-            // Get user map
-            Map singleUser = (Map) entry.getValue();
-
-            // Get download url and append to list
-            urls.add((String) singleUser.get("downloadurl"));
-        }
-
-        System.out.println(urls.toString());
     }
 
     public class ImageAdapterGridView extends BaseAdapter {
@@ -102,9 +91,11 @@ public class ViewUploadsActivity extends AppCompatActivity {
             }
 
             URL url = null;
+            Log.d("courtney", "test");
 
             try {
                 url = new URL(urls.get(position));
+                Log.d("courtney", urls.get(position));
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }
