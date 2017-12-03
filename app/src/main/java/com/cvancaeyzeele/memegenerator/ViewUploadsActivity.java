@@ -46,6 +46,10 @@ public class ViewUploadsActivity extends AppCompatActivity {
                             Map<String, String> map = (Map) child.getValue();
                             urls.add(map.get("url").toString());
                         }
+
+                        // Remove loading wheel
+                        findViewById(R.id.loadingPanel).setVisibility(View.GONE);
+
                         // Create Gridview
                         gridview = (GridView)findViewById(R.id.gridview);
                         gridview.setAdapter(new ImageAdapterGridView(ViewUploadsActivity.this));
