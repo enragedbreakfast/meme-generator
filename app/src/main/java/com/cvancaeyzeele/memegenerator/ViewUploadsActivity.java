@@ -1,12 +1,14 @@
 package com.cvancaeyzeele.memegenerator;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -47,6 +49,17 @@ public class ViewUploadsActivity extends AppCompatActivity {
                         // Create Gridview
                         gridview = (GridView)findViewById(R.id.gridview);
                         gridview.setAdapter(new ImageAdapterGridView(ViewUploadsActivity.this));
+
+                        // When image thumbnail is clicked, start EditImageActivity and pass ID of image clicked (full image, not thumbnail)
+                        gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            public void onItemClick(AdapterView<?> parent,
+                                                    View v, int position, long id) {
+                                Intent intent = new Intent(ViewUploadsActivity.this, ViewMemeActivity.class);
+                                intent.putExtra("url", urls.get(position));
+                                intent.putExtra("existingmeme", true); // used in ViewMemeActivity to determine whether to look for url or filename
+                                startActivity(intent);
+                            }
+                        });
                     }
 
                     @Override

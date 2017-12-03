@@ -234,7 +234,7 @@ public class EditImageActivity extends AppCompatActivity {
 
                 // Pass imageID
                 i.putExtra("filename", imageLocation);
-
+                i.putExtra("existingmeme", false); // used in ViewMemeActivity to determine whether to look for url or filename
                 startActivity(i);
             }
 

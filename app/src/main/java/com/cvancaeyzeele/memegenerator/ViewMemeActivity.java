@@ -31,6 +31,8 @@ import com.google.firebase.storage.StorageReference;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class ViewMemeActivity extends AppCompatActivity {
 
@@ -40,6 +42,9 @@ public class ViewMemeActivity extends AppCompatActivity {
     String imageLocation;
     Bitmap bitmap;
     File imgFile;
+    boolean existingMeme;
+    String url;
+    URL imageURL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,10 +57,32 @@ public class ViewMemeActivity extends AppCompatActivity {
 
         // Display image passed by intent
         Intent intent = getIntent();
-        imageLocation = intent.getStringExtra("filename");
-        imgFile = new File(imageLocation);
 
-        Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+        // Check if meme is from ViewUploadsActivity or EditImageActivity
+        existingMeme = intent.getBooleanExtra("existingmeme", false);
+
+        if (existingMeme) { // user selected meme in ViewUploadsActivity
+            url = intent.getStringExtra("url");
+
+            // Convert url string to URL
+            try {
+                imageURL = new URL(url);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+
+            // Get bitmap from URL
+            try {
+                bitmap = BitmapFactory.decodeStream(imageURL.openConnection().getInputStream());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else { // user created meme in EditImageActivity
+            imageLocation = intent.getStringExtra("filename");
+            imgFile = new File(imageLocation);
+
+            bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+        }
 
         View v = new ImageView(getBaseContext());
         image = new ImageView(v.getContext());
@@ -78,11 +105,18 @@ public class ViewMemeActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.share:
 
-                Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
-                Uri photoUri = Uri.parse(imgFile.getAbsolutePath());
+                Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND); // TODO: change to work with URL images
+                Uri photoUri;
+
+                if (existingMeme) { // share image via url
+                    photoUri = Uri.parse(url);
+                } else { // share image via file path
+                    photoUri = Uri.parse(imgFile.getAbsolutePath());
+                }
+
                 sharingIntent.setData(photoUri);
-                sharingIntent.setType("image/*");
                 sharingIntent.putExtra(android.content.Intent.EXTRA_STREAM, photoUri);
+                sharingIntent.setType("image/*");
                 startActivity(Intent.createChooser(sharingIntent, "Share Via"));
                 return true;
 
