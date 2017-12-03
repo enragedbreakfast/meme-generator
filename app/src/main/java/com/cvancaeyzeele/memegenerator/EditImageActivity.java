@@ -221,7 +221,7 @@ public class EditImageActivity extends AppCompatActivity {
                 createDatabaseEntry(imageID, fileName, timeCreated, firebaseDownloadURL);
             }
         });
-        
+
         // Display toast with Database info
         DatabaseReference databaseRef = database.getReference(imageID);
         databaseRef.addValueEventListener(new ValueEventListener() {
