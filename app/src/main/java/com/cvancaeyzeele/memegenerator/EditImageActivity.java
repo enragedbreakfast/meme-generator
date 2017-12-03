@@ -1,6 +1,7 @@
 package com.cvancaeyzeele.memegenerator;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.net.Uri;
@@ -74,6 +75,9 @@ public class EditImageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_edit_image);
 
         relLayout = (RelativeLayout)findViewById(R.id.relativeLayout);
+
+        // Get SharedPreferences
+        SharedPreferences preferences = getSharedPreferences("Settings", MODE_PRIVATE);
 
         // Get Firebase Storage and Database instances
         FirebaseApp.initializeApp(this);
@@ -379,7 +383,8 @@ public class EditImageActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.settings:
-
+                Intent i = new Intent(EditImageActivity.this, SettingsActivity.class);
+                startActivity(i);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
