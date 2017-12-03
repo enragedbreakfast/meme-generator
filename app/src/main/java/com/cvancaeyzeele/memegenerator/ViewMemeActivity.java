@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -109,7 +110,8 @@ public class ViewMemeActivity extends AppCompatActivity {
                 Uri photoUri;
 
                 if (existingMeme) { // share image via url
-                    photoUri = Uri.parse(url);
+                    String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "", null);
+                    photoUri = Uri.parse(path);
                 } else { // share image via file path
                     photoUri = Uri.parse(imgFile.getAbsolutePath());
                 }
