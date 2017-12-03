@@ -254,14 +254,22 @@ public class EditImageActivity extends AppCompatActivity {
         // Get database references
         DatabaseReference databaseRef = database.getReference();
         DatabaseReference imagesRef = databaseRef.child("images");
+        DatabaseReference urlRef = databaseRef.child("urls");
 
         // Create image objects and add to hashmap
         Map<String, Image> images = new HashMap<>();
         images.put(imageID, new Image(filename, timeCreated, downloadURLMethod));
         Log.d("courtney", "URL - " + downloadURLMethod);
 
+        // Add URLs to hashmap
+        Map<String, String> urls = new HashMap<>();
+        urls.put("url", downloadURLMethod);
+
         // Push hashmap containing image to database
         imagesRef.push().setValue(images);
+
+        // Push URLs to database
+        urlRef.push().setValue(urls);
     }
 
     /**
