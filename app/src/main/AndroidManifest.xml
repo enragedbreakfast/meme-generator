@@ -29,7 +29,10 @@
         </activity>
         <activity android:name=".EditImageActivity" />
         <activity android:name=".ViewUploadsActivity" />
-        <activity android:name=".ViewMemeActivity"></activity>
+        <activity android:name=".ViewMemeActivity" />
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings" />
     </application>
 
 </manifest>
