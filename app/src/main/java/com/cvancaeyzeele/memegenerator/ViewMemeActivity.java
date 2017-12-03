@@ -106,7 +106,7 @@ public class ViewMemeActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.share:
 
-                Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND); // TODO: change to work with URL images
+                Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
                 Uri photoUri;
 
                 if (existingMeme) { // share image via url

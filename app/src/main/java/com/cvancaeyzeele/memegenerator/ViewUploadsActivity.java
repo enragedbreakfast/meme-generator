@@ -24,6 +24,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Map;
+import com.cvancaeyzeele.memegenerator.CheckNetworkConnectivity;
 
 public class ViewUploadsActivity extends AppCompatActivity {
 
@@ -34,6 +35,9 @@ public class ViewUploadsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_uploads);
+
+        // Check for network connection
+
 
         // Get all download URLs and image ID associated
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("urls");

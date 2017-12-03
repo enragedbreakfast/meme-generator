@@ -6,4 +6,6 @@
     <string name="button_view_uploads">View Memes</string>
     <string name="button_share_image">Share Image</string>
     <string name="button_done">Done</string>
+    <string name="button_retry">Retry</string>
+    <string name="text_no_connection">No Internet connection available. Retry?</string>
 </resources>
