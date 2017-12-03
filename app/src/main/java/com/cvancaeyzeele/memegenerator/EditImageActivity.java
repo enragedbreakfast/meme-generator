@@ -1,17 +1,12 @@
 package com.cvancaeyzeele.memegenerator;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -19,7 +14,6 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -63,9 +57,11 @@ public class EditImageActivity extends AppCompatActivity {
     byte[] data;
     Bitmap bitmap;
     String imageLocation;
+    String timeCreated;
 
     String imageID;
     String fileName;
+    String firebaseDownloadURL;
 
     private final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 0;
 
@@ -196,7 +192,7 @@ public class EditImageActivity extends AppCompatActivity {
         // Create a reference to image to upload
         imageID = String.valueOf(System.currentTimeMillis());
         fileName = imageID + ".png";
-        String timeCreated = DateFormat.getDateTimeInstance().format(new Date(System.currentTimeMillis()));
+        timeCreated = DateFormat.getDateTimeInstance().format(new Date(System.currentTimeMillis()));
         StorageReference imageRef = storageRef.child("images/" + fileName);
 
         // Create bitmap of image
@@ -211,18 +207,21 @@ public class EditImageActivity extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Exception exception) {
                 // Handle unsuccessful uploads
+                Log.d("courtney", "upload failed");
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
                 Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                firebaseDownloadURL = downloadUrl.toString();
+                Log.d("courtney", "upload successful " + firebaseDownloadURL);
+
+                // Add data to Firebase database with filename
+                createDatabaseEntry(imageID, fileName, timeCreated, firebaseDownloadURL);
             }
         });
-
-        // Add data to Firebase database with filename
-        createDatabaseEntry(imageID, fileName, timeCreated);
-
+        
         // Display toast with Database info
         DatabaseReference databaseRef = database.getReference(imageID);
         databaseRef.addValueEventListener(new ValueEventListener() {
@@ -251,14 +250,15 @@ public class EditImageActivity extends AppCompatActivity {
      * Create an entry for image in Firebase Database
      * @param filename
      */
-    public void createDatabaseEntry(String imageID, String filename, String timeCreated) {
+    public void createDatabaseEntry(String imageID, String filename, String timeCreated, String downloadURLMethod) {
         // Get database references
         DatabaseReference databaseRef = database.getReference();
         DatabaseReference imagesRef = databaseRef.child("images");
 
         // Create image objects and add to hashmap
         Map<String, Image> images = new HashMap<>();
-        images.put(imageID, new Image(filename, timeCreated));
+        images.put(imageID, new Image(filename, timeCreated, downloadURLMethod));
+        Log.d("courtney", "URL - " + downloadURLMethod);
 
         // Push hashmap containing image to database
         imagesRef.push().setValue(images);
@@ -318,12 +318,14 @@ public class EditImageActivity extends AppCompatActivity {
     public static class Image {
         public String filename;
         public String timeCreated;
+        public String downloadurl;
 
         private Image() {}
 
-        public Image(String filename, String timeCreated) {
+        public Image(String filename, String timeCreated, String downloadurl) {
             this.filename = filename;
             this.timeCreated = timeCreated;
+            this.downloadurl = downloadurl;
         }
 
         public String getFilename() {
@@ -341,5 +343,18 @@ public class EditImageActivity extends AppCompatActivity {
         public void setTimeCreated(String timeCreated) {
             this.timeCreated = timeCreated;
         }
+
+        public String getDownloadurl() {
+            return downloadurl;
+        }
+
+        public void setDownloadurl(String downloadurl) {
+            this.downloadurl = downloadurl;
+        }
+
+        public String toString() {
+            return downloadurl;
+        }
+
     }
 }
