@@ -104,6 +104,11 @@ public class ViewMemeActivity extends AppCompatActivity {
         relLayout.addView(image);
     }
 
+    public void doneSharing(View view) {
+        Intent i = new Intent(ViewMemeActivity.this, MainActivity.class);
+        startActivity(i);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.action_menu, menu);
