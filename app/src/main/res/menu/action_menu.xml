@@ -7,4 +7,9 @@
         android:icon="@android:drawable/ic_menu_share"
         android:title="Share"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/settings"
+        android:icon="@android:drawable/ic_menu_preferences"
+        android:title="Settings"
+        app:showAsAction="always" />
 </menu>

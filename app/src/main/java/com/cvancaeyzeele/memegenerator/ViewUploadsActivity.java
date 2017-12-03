@@ -2,10 +2,13 @@ package com.cvancaeyzeele.memegenerator;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -30,9 +33,20 @@ public class ViewUploadsActivity extends AppCompatActivity {
 
     ArrayList<String> urls = new ArrayList<>();
     GridView gridview;
+    private boolean shouldExecuteOnResume;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        shouldExecuteOnResume = false;
+
+        // Use the chosen theme
+        SharedPreferences preferences = getSharedPreferences("Settings", MODE_PRIVATE);
+        boolean useDarkTheme = preferences.getBoolean("dark_theme", false);
+
+        if(useDarkTheme) {
+            setTheme(R.style.AppTheme_Dark);
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_uploads);
 
@@ -76,6 +90,27 @@ public class ViewUploadsActivity extends AppCompatActivity {
                     }
                 }
         );
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if(shouldExecuteOnResume){
+            SharedPreferences preferences = getSharedPreferences("Settings", MODE_PRIVATE);
+            boolean useDarkTheme = preferences.getBoolean("dark_theme", false);
+
+            if(useDarkTheme) {
+                setTheme(R.style.AppTheme_Dark_NoActionBar);
+                this.recreate();
+            } else {
+                setTheme(R.style.AppTheme_NoActionBar);
+                this.recreate();
+            }
+        } else{
+            shouldExecuteOnResume = true;
+        }
+
     }
 
     public class ImageAdapterGridView extends BaseAdapter {
@@ -128,6 +163,24 @@ public class ViewUploadsActivity extends AppCompatActivity {
             }
 
             return mImageView;
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.edit_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.settings:
+                Intent i = new Intent(ViewUploadsActivity.this, SettingsActivity.class);
+                startActivity(i);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 }

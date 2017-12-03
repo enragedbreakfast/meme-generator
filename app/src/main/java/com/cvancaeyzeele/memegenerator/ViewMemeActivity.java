@@ -2,6 +2,7 @@ package com.cvancaeyzeele.memegenerator;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -49,6 +50,14 @@ public class ViewMemeActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Use the chosen theme
+        SharedPreferences preferences = getSharedPreferences("Settings", MODE_PRIVATE);
+        boolean useDarkTheme = preferences.getBoolean("dark_theme", false);
+
+        if(useDarkTheme) {
+            setTheme(R.style.AppTheme_Dark);
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_meme);
 
@@ -121,7 +130,10 @@ public class ViewMemeActivity extends AppCompatActivity {
                 sharingIntent.setType("image/*");
                 startActivity(Intent.createChooser(sharingIntent, "Share Via"));
                 return true;
-
+            case R.id.settings:
+                Intent i = new Intent(ViewMemeActivity.this, SettingsActivity.class);
+                startActivity(i);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

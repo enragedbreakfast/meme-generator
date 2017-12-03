@@ -66,18 +66,26 @@ public class EditImageActivity extends AppCompatActivity {
     String imageID;
     String fileName;
     String firebaseDownloadURL;
+    private boolean shouldExecuteOnResume;
 
     private final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        shouldExecuteOnResume = false;
+
+        // Use the chosen theme
+        SharedPreferences preferences = getSharedPreferences("Settings", MODE_PRIVATE);
+        boolean useDarkTheme = preferences.getBoolean("dark_theme", false);
+
+        if(useDarkTheme) {
+            setTheme(R.style.AppTheme_Dark);
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_image);
 
         relLayout = (RelativeLayout)findViewById(R.id.relativeLayout);
-
-        // Get SharedPreferences
-        SharedPreferences preferences = getSharedPreferences("Settings", MODE_PRIVATE);
 
         // Get Firebase Storage and Database instances
         FirebaseApp.initializeApp(this);
@@ -185,6 +193,27 @@ public class EditImageActivity extends AppCompatActivity {
                 return true;
             }
         });
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if(shouldExecuteOnResume){
+            SharedPreferences preferences = getSharedPreferences("Settings", MODE_PRIVATE);
+            boolean useDarkTheme = preferences.getBoolean("dark_theme", false);
+
+            if(useDarkTheme) {
+                setTheme(R.style.AppTheme_Dark_NoActionBar);
+                this.recreate();
+            } else {
+                setTheme(R.style.AppTheme_NoActionBar);
+                this.recreate();
+            }
+        } else{
+            shouldExecuteOnResume = true;
+        }
 
     }
 
