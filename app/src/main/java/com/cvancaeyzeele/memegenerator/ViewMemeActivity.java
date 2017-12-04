@@ -47,9 +47,12 @@ public class ViewMemeActivity extends AppCompatActivity {
     boolean existingMeme;
     String url;
     URL imageURL;
+    private boolean shouldExecuteOnResume;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        shouldExecuteOnResume = false;
+
         // Use the chosen theme
         SharedPreferences preferences = getSharedPreferences("Settings", MODE_PRIVATE);
         boolean useDarkTheme = preferences.getBoolean("dark_theme", false);
@@ -102,6 +105,27 @@ public class ViewMemeActivity extends AppCompatActivity {
         // Set layout params for ImageView
         image.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
         relLayout.addView(image);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if(shouldExecuteOnResume){
+            SharedPreferences preferences = getSharedPreferences("Settings", MODE_PRIVATE);
+            boolean useDarkTheme = preferences.getBoolean("dark_theme", false);
+
+            if(useDarkTheme) {
+                setTheme(R.style.AppTheme_Dark_NoActionBar);
+                this.recreate();
+            } else {
+                setTheme(R.style.AppTheme_NoActionBar);
+                this.recreate();
+            }
+        } else{
+            shouldExecuteOnResume = true;
+        }
+
     }
 
     public void doneSharing(View view) {
